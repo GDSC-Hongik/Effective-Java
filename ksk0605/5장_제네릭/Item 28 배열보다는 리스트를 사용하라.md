@@ -35,11 +35,11 @@ String s = stringLists[0].get(0);                 // (5)
 
 (1)부터 작동은 안되지만 된다고 가정하면? 
 
-- ```List<String>[]```을 Object[]에 넣는 것도 문제 없고
-- ```List<Integer>```를 Object[]에 넣는 것도 문제가 없으니
+- ```List<String>[]```을 ```Object[]```에 넣는 것도 문제 없고
+- ```List<Integer>```를 ```Object[]```에 넣는 것도 문제가 없으니
     - 제네릭은 소거방식, 런타임에는 타입을 지워서 확인 안해.
-    - ```List<Integer>``` → List, ```List<Integer>[]``` 는 List[]
-- 여기서 ```List<Integer>```인스턴스를 저장되어있는 ```List<String>```은 꺼내면서 자동적으로 String으로 형변환을 하게 되는데? 이때 런타임에서 ClassCastException 발생
+    - ```List<Integer>``` → ```List```, ```List<Integer>[]``` 는 ```List[]```
+- 여기서 ```List<Integer>```인스턴스를 저장되어있는 ```List<String>```은 꺼내면서 자동적으로 ```String```으로 형변환을 하게 되는데? 이때 런타임에서 ```ClassCastException``` 발생
 
 > 사실 그래서 결국 자바는 (1)에서 컴파일 자체가 안되도록 한다.
 > 
