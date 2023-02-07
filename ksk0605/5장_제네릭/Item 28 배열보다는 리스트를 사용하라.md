@@ -12,10 +12,12 @@
 Object[] objectArray = new Long[1];
 // ArrayStoreException 발생
 objectArray[0] = "런타임에 타입 다른데?";
+// 상속 관계니까 컴파일에선 문제 없음
 
 // 아예 컴파일 오류
 List<Object> objectList = new ArrayList<Long>();
 objectList.add("야 이게 컴파일이 되겠냐?");
+// 아무관계도 아니니 컴파일에서 부터 문제생김
 ```
 
 > 두 가지의 근본적 차이로 인해 조화가 잘 안된다는 단점이 있다.
