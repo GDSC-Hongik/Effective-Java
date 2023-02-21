@@ -4,7 +4,63 @@
 
 자바 8에서 추가한 스트림(*Streams*)은 람다를 활용할 수 있는 기술 중 하나. 자바 8 이전에는 배열 또는 컬렉션 인스턴스를 다루는 방법은 `for` 또는 `foreach` 문을 돌면서 요소 하나씩을 꺼내서 다루는 것이 일반적이었음. 로직이 복잡해질 수록 이해하기 어려울정도로 for문이 많아지는 것을 방지하기 위해 나온 개념.
 
-여기서 문제는 `stream`에는 `foreach`를 사용하지 못해서 불편한 경우가 있다는것.
+### 스트림과 컬렉션의 비교
+
+int 형태의 배열을 가지고 중복을 제거하고 내림차순으로 정렬한 뒤 List 형태로 반환하는 자바 코드를 stream으로 구현한 코드를 각각 컬렉션과 스트림으로 비교해보자
+
+- 컬렉션
+
+```java
+int[] arr = {5, 3, 1, 4, 5, 2, 2, 1};
+List<Integer> result = new ArrayList<>();
+
+// 중복 제거
+for (int num : arr) {
+    if (!result.contains(num)) {
+        result.add(num);
+    }
+}
+
+// 내림차순 정렬
+Collections.sort(result, Collections.reverseOrder());
+```
+
+- 스트림
+
+```java
+int[] arr = {5, 3, 1, 4, 5, 2, 2, 1};
+        
+List<Integer> result = Arrays.stream(arr)
+        .distinct()
+        .boxed()
+        .sorted(Collections.reverseOrder())
+        .collect(Collectors.toList());
+
+System.out.println(result);
+```
+
+단, Array는 스트림을 가지고 있으니까 
+
+```java
+int[] arr = {5, 3, 1, 4, 5, 2, 2, 1};
+List<Integer> result = new ArrayList<>();
+
+// 중복 제거
+Arrays.stream(arr).distinct().forEach(result::add);
+
+// 내림차순 정렬
+Collections.sort(result, Collections.reverseOrder());
+
+System.out.println(result);
+```
+
+요롷게 바꿀 수 있다. 
+
+보는 것처럼 컬렉션이나 array는 stream을 가지고 있어서 왠만하면 컬렉션을 넘겨주는 것이 좋은 방법이라고 할 수 있겠다~
+
+문제는 `stream`에는 `foreach`를 사용하지 못해서 불편한 경우가 있다는것.
+
+아래 두 예시처럼
 
 어댑터 메서드를 사용하여 스트림을 iterate로 변경하거나
 
