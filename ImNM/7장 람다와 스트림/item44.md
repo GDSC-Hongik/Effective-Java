@@ -1,102 +1,60 @@
-# Item 56 : 공개된 api 요소에는 항상 문서화 주석을 작성하라
+# Item 44 : 표준 함수형 인터페이스를 사용하라
 
 ## 핵심정리
 
-- 여러분의 api를 올바로 문서화하려면 공개된 모든 클래스 , 인터페이스 , 메서드 , 필드 선언에 문서화 주석을 달아야 한다.
-- 메서드용 문서화 주석에는 해당 메서드와 클라이언트 사이의 규약을 명로하게 기술
-- 제네릭 타입이나 제네릭 메서드를 문서화할 때는 모든 타입 매개변수에 주석을 달아야한다.
-- 클래스 혹은 정적 매서드가 스레드 안전하든 그렇지 않든 스레드 안전 수준을 표시
-- 자바독 유틸리티를 적극 활용해라!
+- 필요한 용도에 맞는게 있다면 , 직접 구현하지 말고 표준 함수형 인터페이스를 사용하라!!
+- 기본 함수형 인터페이스에 박싱된 기본 타입을 넣어 사용하지는 말자 ( 아이템 61 )
+  박싱 int Integer 같은거
+- 직접 만든 함수형 인터페이스에는 항상 @FuncationalInterface 사용하자.
 
-### 1. 여러분의 api를 올바로 문서화하려면 공개된 모든 클래스 , 인터페이스 , 메서드 , 필드 선언에 문서화 주석을 달아야 한다.
-
-잘 작성된 문서도 곁들여야 API를 쓸모있게 할 수 있다.
-
-자바에서는 자바독 이라는 유틸리티가 소스코드 파일에서 문서화 주석이라는 특수한 형태로 기술된 설명을 추려 API문서로 변환
-
-공개된 API는 무조건 달아라!
-
-상속용으로 설계된 클래스의 메서드가 아니라면
-how 가 아닌 what을 기술. 즉 무엇을 하는 메서드인지.
-
-또한 사후 조건 도 고려
-
-- @throws
-  비검사 예외를 선언하여 암시적으로 기술
-- @param
-  조건에 영향받는 매개변수에 기술
-- @return
-  반환타입이 void가 아니라면
-- @code
-  태그로 감싼 내용을 코드용 폰트로 렌더링
-  태그로 감싼 내용에 포함된 HTM 요소나 다른 자바독 태그를 무시한다.
+### 1. 직접 구현하지 말고 표준 함수형 인터페이스를 사용하라.
 
 ```java
-   /**
-     * Returns a BigInteger whose value is equivalent to this BigInteger
-     * with the designated bit cleared.
-     * (Computes {@code (this & ~(1<<n))}.)
-     *
-     * @param  n index of bit to clear.
-     * @return {@code this & ~(1<<n)}
-     * @throws ArithmeticException {@code n} is negative.
-     */
-    public BigInteger clearBit(int n) {
+protected boolean removeEldestEntry(Map.Entry<K,V> eldest) {
+    return size() > 100;
+}
 ```
-
-- @impleSpec
-  해당 메서드와 하위 클래스 사이의 계약을 설명
-  하위 클래스들이 그 메서드를 상속하거나 super 키워드를 이용해 호출할 때 그 메서드가 어떻게 동작하는지를 명확히 인지
-  사용하도록 해줘야함.
-
-- @literal
-  특수문자 집어넣고싶을때 사용
-
-- @summary
-  요약 설명 용
-- @index
-  색인화 가능
 
 ```java
-    /**
-     * Returns a sequential {@code Stream} with this collection as its source.
-     *
-     * <p>This method should be overridden when the {@link #spliterator()}
-     * method cannot return a spliterator that is {@code IMMUTABLE},
-     * {@code CONCURRENT}, or <em>late-binding</em>. (See {@link #spliterator()}
-     * for details.)
-     *
-     * @implSpec
-     * The default implementation creates a sequential {@code Stream} from the
-     * collection's {@code Spliterator}.
-     *
-     * @return a sequential {@code Stream} over the elements in this collection
-     * @since 1.8
-     */
-    default Stream<E> stream() {
-        return StreamSupport.stream(spliterator(), false);
-    }
+@FunctionalInterface interface EldestEntryRemovalFunction<K,V>{
+    boolean remove(Map<K,V> map, Map.Entry<K,V> eldest);
+}
 ```
 
-### 2. 제네릭 타입이나 제네릭 메서드를 문서화할 때는 모든 타입 매개변수에 주석을 달아야한다.
+잘 동작하긴 하지만 자바 표준 라이브러리에 준비되어있음!!
+
+BiPredicate<Map<K,V> , Map.Entry<K,V>>
+
+java.util.function 에는 총 43개의 인터페이스가 담겨있음
+
+### 2. 기본형 6가지
+
+- UnaryOperator<T> : T apply(T t)
+- BinaryOperator<T> : T apply(T t1,T t2)
+- Predicate<T> : boolean test(T t)
+- Function<T,R> : R apply(T t)
+- Supplier<T> : T get()
+- Consumer<T> : void accept(T t)
 
 ```java
-/**
- * <p>This interface is a member of the
- * <a href="{@docRoot}/java.base/java/util/package-summary.html#CollectionsFramework">
- * Java Collections Framework</a>.
- *
- * @param <K> the type of keys maintained by this map
- * @param <V> the type of mapped values
- *
- * @author  Josh Bloch
- * @see HashMap
- * @see TreeMap
- * @see Hashtable
- * @see SortedMap
- * @see Collection
- * @see Set
- * @since 1.2
- */
-public interface Map<K, V> {
+String str;
+void a(Consumer<String> func){
+    Objects.requireNotNull(func);
+    // 어떤걸 실행
+    func.accept(str);
+}
 ```
+
+### 3. 직접 구현은?
+
+- 자주 쓰이며 , 이름 자체가 용도를 명확히 설명해준다.
+- 반드시 따라야 하는 규약이 있다.
+- 유용한 디폴트 메서드를 제공할 수 있다.
+
+@Override 를 사용하는거와 마찬가지처럼
+함수형 인터페이스라는 것을 명시 할 수 있는
+@FuncationalInterface 를 직접 만든 함수형 인터페이스에 사용하라.
+
+- 해당 클래스의 코드나 설명 문서에 람다용 으로 설계된 것을 알수 있음.
+- 해당 인터페이스가 추상 메서드 오직 하나만 가지고 있어야 컴파일 되게 해준다.
+- 유지 보수 과정에서 누군가 실수로 메서드를 추가하지 못하게 막아준다.
